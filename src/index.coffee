@@ -45,7 +45,7 @@ DataFrame = (config) ->
   events.EventEmitter.call this
 
   self.reducers = {}
-  self.config = config
+  self.config = config or {}
 
   getReducer = (key) ->
     unless self.reducers[key.string]
@@ -54,12 +54,19 @@ DataFrame = (config) ->
     self.reducers[key.string]
 
   self.insert = (doc) ->
-    reducerKeys = getReducerKeys doc, config
+    reducerKeys = getReducerKeys doc, self.config
     for key in reducerKeys
       reducer = getReducer key
       reducer.insert doc
 
       self.emit 'result', reducer
+
+  self.set = (key, value) ->
+    self.config[key] = value
+
+  self.by = (dimensions) ->
+    dimensions = [dimensions] if typeof dimensions is 'string'
+    self.config.selected = dimensions
 
   return this
 
