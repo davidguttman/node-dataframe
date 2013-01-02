@@ -2,11 +2,14 @@ reduce = require 'rolling-reduce'
 util = require 'util'
 events = require 'events'
 
-getSortedKeys = (obj) ->
+getKeys = (obj) ->
   keys = []
   for k, v of obj
     keys.push k
-  return keys.sort()
+  return keys
+
+getSortedKeys = (obj) ->
+  return getKeys(obj).sort()
 
 
 extend = (target, source) ->
@@ -17,6 +20,8 @@ extend = (target, source) ->
 
 createReducer = (key, config) ->
   reducer = reduce extend {}, key.object
+  reducer.criteria = key.object
+  reducer.level = key.level
   reducer.on 'insert', config.insert
 
 toKeyString = (obj) ->
@@ -35,7 +40,8 @@ getReducerKeys = (doc, config) ->
     reducerKeyObjs.push key
 
   reducerKeys = reducerKeyObjs.map (obj) ->
-    {object: obj, string: toKeyString obj}
+    level = (getKeys obj).length - 1
+    {object: obj, string: (toKeyString obj), level: level}
   
   return reducerKeys
 
@@ -67,6 +73,19 @@ DataFrame = (config) ->
   self.by = (dimensions) ->
     dimensions = [dimensions] if typeof dimensions is 'string'
     self.config.selected = dimensions
+
+  self.list = (dimensions) ->
+    dimensions = [dimensions] if typeof dimensions is 'string'
+
+    list = []
+
+    for dimension, level in dimensions 
+
+      for key, reducer of self.reducers
+        if (reducer.level is level) and reducer.criteria[dimension]?
+          list.push reducer.result
+
+    list
 
   return this
 
