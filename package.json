@@ -25,5 +25,6 @@
     "mocha": "~1.7.4",
     "coffee-script": "~1.4.0",
     "should": "~1.2.1"
-  }
+  },
+  "browserify": "./src/index.coffee"
 }
