@@ -1,0 +1,5 @@
+--compilers coffee:coffee-script
+--globals url
+--reporter spec
+--watch
+--growl
