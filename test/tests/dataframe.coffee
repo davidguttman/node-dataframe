@@ -1,4 +1,9 @@
 assert = require 'assert'
+
+expectObj = (given, expected, message='') ->
+  for k, v of expected
+    expect given[k], v, "#{message}\n#{k}"
+
 expect = (given, expected, message='') ->
   assert given is expected, "#{message}\ngiven: #{given}\nexpected: #{expected}"
 
@@ -25,17 +30,16 @@ describe 'DataFrame', ->
   describe '#list()', ->
     df = null
 
-    before ->
+    beforeEach ->
       df = new DataFrame
       df.set 'dimensions', config.dimensions
       df.set 'insert', config.insert
-
-    it 'should list by a single dimension', ->
       df.by ['browser', 'os']
 
       for score in config.scores
         df.insert score
 
+    it 'should list by a single dimension', ->
       list = df.list 'browser'
 
       expected = [
@@ -46,6 +50,23 @@ describe 'DataFrame', ->
 
       expect list.length, 3, 'should be 3 results'
 
-      for expectation, i in expected
-        expect list[i].browser, expectation.browser, 'browser should match'
-        expect list[i].score, expectation.score, 'score should match'
+      for item, i in expected
+        expectObj list[i], expected[i], 'should match'
+
+    it 'should list by two dimensions', ->
+      list = df.list ['browser', 'os']
+
+      expected =  [ 
+        { browser: 'safari', count: 2, score: 12 },
+        { browser: 'chrome', count: 2, score: 30 },
+        { browser: 'ie', count: 1, score: 15 },
+        { browser: 'safari', os: 'osx', count: 2, score: 12 },
+        { browser: 'chrome', os: 'osx', count: 1, score: 10 },
+        { browser: 'ie', os: 'win', count: 1, score: 15 },
+        { browser: 'chrome', os: 'win', count: 1, score: 20 } 
+      ]
+
+      expect list.length, expected.length, 'should match expected length'
+
+      for item, i in expected
+        expectObj list[i], expected[i], 'should match'
