@@ -36,7 +36,7 @@ getReducerKeys = (doc, config) ->
   for selected in config.selected
     lastKey = reducerKeyObjs.slice(-1)[0]
     key = extend {}, lastKey
-    key[selected] = config.dimensions[selected].value doc  
+    key[selected] = config.dimensions[selected].value doc
     reducerKeyObjs.push key
 
   reducerKeys = reducerKeyObjs.map (obj) ->
@@ -79,7 +79,7 @@ DataFrame = (config) ->
 
     list = []
 
-    for dimension, level in dimensions 
+    for dimension, level in dimensions
 
       for key, reducer of self.reducers
         if (reducer.level is level) and reducer.criteria[dimension]?
