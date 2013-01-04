@@ -25,8 +25,8 @@ class DataFrame extends events.EventEmitter
     for key in reducerKeys
       reducer = @getReducer key
 
-      if filter
-        reducer.insert doc if @filterReducer reducer, filter
+      if filters
+        reducer.insert doc if @multiFilterReducer reducer, filters
       else
         reducer.insert doc
 
@@ -46,6 +46,13 @@ class DataFrame extends events.EventEmitter
     for doc in @docs
       @reduce doc, [@config.selected]
 
+  multiFilterReducer: (reducer, filters) ->
+    isValid = false
+    for filter in filters
+      isValid = @filterReducer reducer, filter
+      return true if isValid
+
+    return isValid
 
   filterReducer: (reducer, filter) ->
     level = filter.length - 1
