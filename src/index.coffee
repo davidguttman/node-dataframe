@@ -1,49 +1,5 @@
 reduce = require 'rolling-reduce'
-util = require 'util'
 events = require 'events'
-
-getKeys = (obj) ->
-  keys = []
-  for k, v of obj
-    keys.push k
-  return keys
-
-getSortedKeys = (obj) ->
-  return getKeys(obj).sort()
-
-
-extend = (target, source) ->
-  source = source or {}
-  for k, v of source
-    target[k] = v
-  return target
-
-createReducer = (key, config) ->
-  reducer = reduce extend {}, key.object
-  reducer.criteria = key.object
-  reducer.level = key.level
-  reducer.on 'insert', config.insert
-
-toKeyString = (obj) ->
-  valuePairs = getSortedKeys(obj).map (dKey) ->
-    "#{dKey}:#{obj[dKey]}"
-  keyString = valuePairs.join '|'
-
-
-getReducerKeys = (doc, config) ->
-  reducerKeyObjs = []
-
-  for selected in config.selected
-    lastKey = reducerKeyObjs.slice(-1)[0]
-    key = extend {}, lastKey
-    key[selected] = config.dimensions[selected].value doc
-    reducerKeyObjs.push key
-
-  reducerKeys = reducerKeyObjs.map (obj) ->
-    level = (getKeys obj).length - 1
-    {object: obj, string: (toKeyString obj), level: level}
-  
-  return reducerKeys
 
 class DataFrame extends events.EventEmitter
   constructor: (config) ->
@@ -54,12 +10,12 @@ class DataFrame extends events.EventEmitter
 
   getReducer: (key) ->
     unless @reducers[key.string]
-      @reducers[key.string] = createReducer key, @config
+      @reducers[key.string] = @createReducer key, @config
 
     @reducers[key.string]
 
   insert: (doc) ->
-    reducerKeys = getReducerKeys doc, @config
+    reducerKeys = @getReducerKeys doc, @config
     for key in reducerKeys
       reducer = @getReducer key
       reducer.insert doc
@@ -72,6 +28,27 @@ class DataFrame extends events.EventEmitter
   by: (dimensions) ->
     dimensions = [dimensions] if typeof dimensions is 'string'
     @config.selected = dimensions
+
+  createReducer: (key, config) ->
+    reducer = reduce extend {}, key.object
+    reducer.criteria = key.object
+    reducer.level = key.level
+    reducer.on 'insert', config.insert
+
+  getReducerKeys: (doc, config) ->
+    reducerKeyObjs = []
+
+    for selected in config.selected
+      lastKey = reducerKeyObjs.slice(-1)[0]
+      key = extend {}, lastKey
+      key[selected] = config.dimensions[selected].value doc
+      reducerKeyObjs.push key
+
+    reducerKeys = reducerKeyObjs.map (obj) ->
+      level = (getKeys obj).length - 1
+      {object: obj, string: (toKeyString obj), level: level}
+    
+    return reducerKeys
 
   list: (dimensions) ->
     dimensions = [dimensions] if typeof dimensions is 'string'
@@ -86,6 +63,24 @@ class DataFrame extends events.EventEmitter
 
     list
 
-# util.inherits DataFrame, events.EventEmitter
-
 module.exports = DataFrame
+
+getKeys = (obj) ->
+  keys = []
+  for k, v of obj
+    keys.push k
+  return keys
+
+getSortedKeys = (obj) ->
+  return getKeys(obj).sort()
+
+extend = (target, source) ->
+  source = source or {}
+  for k, v of source
+    target[k] = v
+  return target
+
+toKeyString = (obj) ->
+  valuePairs = getSortedKeys(obj).map (dKey) ->
+    "#{dKey}:#{obj[dKey]}"
+  keyString = valuePairs.join '|'
