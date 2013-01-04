@@ -6,6 +6,7 @@ class DataFrame extends events.EventEmitter
     events.EventEmitter.call this
 
     @reducers = {}
+    @docs = []
     @config = config or {}
     @config.selected ?= []
 
@@ -15,13 +16,19 @@ class DataFrame extends events.EventEmitter
 
     @reducers[key.string]
 
-  insert: (doc) ->
+  insert: (doc, filter) ->
     reducerKeys = @getReducerKeys doc, @config
     for key in reducerKeys
       reducer = @getReducer key
-      reducer.insert doc
+
+      if filter
+        reducer.insert doc if @filterReducer reducer, filter
+      else
+        reducer.insert doc
 
       @emit 'result', reducer
+
+    @docs.push doc
 
   set: (key, value) ->
     @config[key] = value
@@ -29,6 +36,13 @@ class DataFrame extends events.EventEmitter
   by: (dimensions) ->
     dimensions = [dimensions] if typeof dimensions is 'string'
     @config.selected = dimensions
+
+  addDimension: (dimension) ->
+    @config.selected.push dimension unless dimension in @config.selected
+
+    for doc in @docs
+      @insert doc, @config.selected
+
 
   filterReducer: (reducer, filter) ->
     level = filter.length - 1
