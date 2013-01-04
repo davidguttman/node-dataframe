@@ -7,6 +7,7 @@ class DataFrame extends events.EventEmitter
 
     @reducers = {}
     @config = config or {}
+    @config.selected ?= []
 
   getReducer: (key) ->
     unless @reducers[key.string]
@@ -28,6 +29,23 @@ class DataFrame extends events.EventEmitter
   by: (dimensions) ->
     dimensions = [dimensions] if typeof dimensions is 'string'
     @config.selected = dimensions
+
+  filterReducers: (filter) ->
+    level = filter.length - 1
+
+    list = []
+
+    for key, reducer of @reducers
+      continue unless (reducer.level is level)
+      
+      valid = true
+      for dimension in filter
+        valid = false unless reducer.criteria[dimension]?
+      
+      list.push reducer if valid
+
+    list
+
 
   createReducer: (key, config) ->
     reducer = reduce extend {}, key.object
@@ -53,20 +71,8 @@ class DataFrame extends events.EventEmitter
   list: (dimensions) ->
     dimensions = [dimensions] if typeof dimensions is 'string'
 
-    level = dimensions.length - 1
-
-    list = []
-
-    for key, reducer of @reducers
-      continue unless (reducer.level is level)
-      
-      valid = true
-      for dimension in dimensions
-        valid = false unless reducer.criteria[dimension]?
-      
-      list.push reducer.result if valid
-
-    list
+    reducers = @filterReducers dimensions
+    results = reducers.map (reducer) -> reducer.result
 
 module.exports = DataFrame
 
