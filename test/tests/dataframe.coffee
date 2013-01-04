@@ -57,9 +57,6 @@ describe 'DataFrame', ->
       list = df.list ['browser', 'os']
 
       expected =  [ 
-        { browser: 'safari', count: 2, score: 12 },
-        { browser: 'chrome', count: 2, score: 30 },
-        { browser: 'ie', count: 1, score: 15 },
         { browser: 'safari', os: 'osx', count: 2, score: 12 },
         { browser: 'chrome', os: 'osx', count: 1, score: 10 },
         { browser: 'ie', os: 'win', count: 1, score: 15 },

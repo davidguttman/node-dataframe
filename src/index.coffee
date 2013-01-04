@@ -53,13 +53,18 @@ class DataFrame extends events.EventEmitter
   list: (dimensions) ->
     dimensions = [dimensions] if typeof dimensions is 'string'
 
+    level = dimensions.length - 1
+
     list = []
 
-    for dimension, level in dimensions
-
-      for key, reducer of @reducers
-        if (reducer.level is level) and reducer.criteria[dimension]?
-          list.push reducer.result
+    for key, reducer of @reducers
+      continue unless (reducer.level is level)
+      
+      valid = true
+      for dimension in dimensions
+        valid = false unless reducer.criteria[dimension]?
+      
+      list.push reducer.result if valid
 
     list
 
