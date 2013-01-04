@@ -6,6 +6,7 @@ class DataFrame extends events.EventEmitter
     events.EventEmitter.call this
 
     @reducers = {}
+    @dimensionSets = {}
     @docs = []
     @config = config or {}
     @config.selected ?= []
@@ -39,6 +40,26 @@ class DataFrame extends events.EventEmitter
   by: (dimensions) ->
     dimensions = [dimensions] if typeof dimensions is 'string'
     @config.selected = dimensions
+
+    filters = []
+
+    sets = @setsFromDimensions dimensions
+    for set, filter of sets
+      unless @dimensionSets[set]
+        @dimensionSets[set] = filter
+        filters.push @dimensionSets[set]
+
+    for doc in @docs
+      @reduce doc, filters
+
+
+  setsFromDimensions: (dimensions) ->
+    sets = {}
+    for dimension, i in dimensions
+      group = dimensions[0..i]
+      sets[group.sort().join ','] = group
+
+    return sets
 
   addDimension: (dimension) ->
     @config.selected.push dimension unless dimension in @config.selected
