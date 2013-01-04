@@ -30,22 +30,22 @@ class DataFrame extends events.EventEmitter
     dimensions = [dimensions] if typeof dimensions is 'string'
     @config.selected = dimensions
 
-  filterReducers: (filter) ->
+  filterReducer: (reducer, filter) ->
     level = filter.length - 1
 
-    list = []
-
-    for key, reducer of @reducers
-      continue unless (reducer.level is level)
-      
+    if reducer.level is level
       valid = true
       for dimension in filter
-        valid = false unless reducer.criteria[dimension]?
-      
-      list.push reducer if valid
+        return valid = false unless reducer.criteria[dimension]?
+      return valid
+    else
+      return false
 
+  filterReducers: (filter) ->
+    list = []
+    for key, reducer of @reducers      
+      list.push reducer if @filterReducer reducer, filter
     list
-
 
   createReducer: (key, config) ->
     reducer = reduce extend {}, key.object
