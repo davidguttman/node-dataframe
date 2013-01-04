@@ -45,50 +45,47 @@ getReducerKeys = (doc, config) ->
   
   return reducerKeys
 
-DataFrame = (config) ->
-  self = this
+class DataFrame extends events.EventEmitter
+  constructor: (config) ->
+    events.EventEmitter.call this
 
-  events.EventEmitter.call this
+    @reducers = {}
+    @config = config or {}
 
-  self.reducers = {}
-  self.config = config or {}
+  getReducer: (key) ->
+    unless @reducers[key.string]
+      @reducers[key.string] = createReducer key, @config
 
-  getReducer = (key) ->
-    unless self.reducers[key.string]
-      self.reducers[key.string] = createReducer key, self.config
+    @reducers[key.string]
 
-    self.reducers[key.string]
-
-  self.insert = (doc) ->
-    reducerKeys = getReducerKeys doc, self.config
+  insert: (doc) ->
+    reducerKeys = getReducerKeys doc, @config
     for key in reducerKeys
-      reducer = getReducer key
+      reducer = @getReducer key
       reducer.insert doc
 
-      self.emit 'result', reducer
+      @emit 'result', reducer
 
-  self.set = (key, value) ->
-    self.config[key] = value
+  set: (key, value) ->
+    @config[key] = value
 
-  self.by = (dimensions) ->
+  by: (dimensions) ->
     dimensions = [dimensions] if typeof dimensions is 'string'
-    self.config.selected = dimensions
+    @config.selected = dimensions
 
-  self.list = (dimensions) ->
+  list: (dimensions) ->
     dimensions = [dimensions] if typeof dimensions is 'string'
 
     list = []
 
     for dimension, level in dimensions
 
-      for key, reducer of self.reducers
+      for key, reducer of @reducers
         if (reducer.level is level) and reducer.criteria[dimension]?
           list.push reducer.result
 
     list
 
-  return this
-
-util.inherits DataFrame, events.EventEmitter
+# util.inherits DataFrame, events.EventEmitter
 
 module.exports = DataFrame
