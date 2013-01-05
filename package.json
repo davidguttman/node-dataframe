@@ -24,7 +24,8 @@
   "devDependencies": {
     "mocha": "~1.7.4",
     "coffee-script": "~1.4.0",
-    "should": "~1.2.1"
+    "should": "~1.2.1",
+    "JSONStream": "~0.4.3"
   },
   "browserify": "./src/index.coffee"
 }
