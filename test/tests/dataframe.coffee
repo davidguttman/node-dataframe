@@ -13,7 +13,7 @@ config = require '../fixtures/ua_config'
 
 describe 'DataFrame', ->
 
-  describe '#addDimension()', ->
+  describe '#by()', ->
     df = null
 
     beforeEach ->
@@ -30,7 +30,7 @@ describe 'DataFrame', ->
       list = df.list ['browser', 'os']
       expect list.length, 0, 'should be empty'
       
-      df.addDimension 'os'
+      df.by ['browser', 'os']
       list = df.list ['browser', 'os']
 
       expected =  [ 
