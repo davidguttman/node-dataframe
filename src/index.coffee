@@ -49,8 +49,9 @@ class DataFrame extends events.EventEmitter
         @dimensionSets[set] = filter
         filters.push @dimensionSets[set]
 
-    for doc in @docs
-      @reduce doc, filters
+    if filters.length > 0
+      for doc in @docs
+        @reduce doc, filters
 
 
   setsFromDimensions: (dimensions) ->
