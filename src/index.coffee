@@ -21,6 +21,8 @@ class DataFrame extends events.EventEmitter
     @docs.push doc
     @reduce doc
 
+    return this
+
   reduce: (doc, filters) ->
     reducerKeys = @getReducerKeys doc, @config
     for key in reducerKeys
@@ -33,9 +35,13 @@ class DataFrame extends events.EventEmitter
 
       @emit 'result', reducer
 
+    return this
+
 
   set: (key, value) ->
     @config[key] = value
+    
+    return this
 
   by: (dimensions) ->
     dimensions = [dimensions] if typeof dimensions is 'string'
@@ -53,6 +59,8 @@ class DataFrame extends events.EventEmitter
       for doc in @docs
         @reduce doc, filters
 
+    return this
+
 
   setsFromDimensions: (dimensions) ->
     sets = {}
@@ -67,6 +75,8 @@ class DataFrame extends events.EventEmitter
 
     for doc in @docs
       @reduce doc, [@config.selected]
+
+    return this
 
   multiFilterReducer: (reducer, filters) ->
     isValid = false
