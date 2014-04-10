@@ -22,10 +22,14 @@
     "rolling-reduce": "0.0.0"
   },
   "devDependencies": {
+    "coffeeify": "~0.5.1",
     "mocha": "~1.7.4",
     "coffee-script": "~1.4.0",
     "should": "~1.2.1",
     "JSONStream": "~0.4.3"
   },
-  "browserify": "./src/index.coffee"
+  "browser": "./src/index.coffee",
+  "browserify": {
+    "transform": "coffeeify"
+  }
 }

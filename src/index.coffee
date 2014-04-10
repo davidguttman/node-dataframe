@@ -29,9 +29,12 @@ class DataFrame extends events.EventEmitter
       reducer = @getReducer key
 
       if filters
-        reducer.insert doc if @multiFilterReducer reducer, filters
+        if @multiFilterReducer reducer, filters
+          reducer.insert doc 
+          @emit 'update', reducer
       else
         reducer.insert doc
+        @emit 'update', reducer
 
       @emit 'result', reducer
 
@@ -108,6 +111,10 @@ class DataFrame extends events.EventEmitter
     reducer.criteria = key.object
     reducer.level = key.level
     reducer.on 'insert', config.insert
+
+    @emit 'add', reducer
+
+    return reducer
 
   getReducerKeys: (doc, config) ->
     reducerKeyObjs = []
