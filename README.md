@@ -1,3 +1,3 @@
 # DataFrame #
 
-Streaming data aggregation and calculations.
+Explore data by grouping and reducing.
