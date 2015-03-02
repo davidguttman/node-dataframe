@@ -20,39 +20,15 @@ var reduce = function(row, memo) {
   return memo
 }
 
-var calculations = [
-  {
-    title: 'Count',
-    value: 'count'
-  },
-  {
-    title: 'Amount',
-    value: 'amountTotal',
-    template: function(val, row) {
-      return '$' + val.toFixed(2)
-    }
-  },
-  {
-    title: 'Avg Amount',
-    value: function(row) {
-      return row.amountTotal / row.count
-    },
-    template: function(val, row) {
-      return '$' + val.toFixed(2)
-    }
-  }
-]
-
 var df = DataFrame({
   rows: data,
   dimensions: dimensions,
-  reduce: reduce,
-  calculations: calculations
+  reduce: reduce
 })
 
 var results = df.calculate({
   dimensions: ['First Name', 'Last Name'],
-  sortBy: 'Amount',
+  sortBy: 'amountTotal',
   sortDir: 'desc'
 })
 

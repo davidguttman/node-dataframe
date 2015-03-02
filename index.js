@@ -6,7 +6,6 @@ function DataFrame (opts) {
   this.rows = opts.rows
   this.dimensions = opts.dimensions
   this.reduce = opts.reduce
-  this.calculations = opts.calculations
   this.cache = {}
 
   return this
@@ -98,12 +97,6 @@ DataFrame.prototype.getColumns = function() {
     columns.push({type: 'dimension', title: d, value: d})
   })
 
-  this.calculations.forEach(function(c) {
-    columns.push({
-      type:'calculation', title: c.title, template: c.template, value: c.value
-    })
-  })
-
   return columns
 }
 
@@ -140,7 +133,7 @@ DataFrame.prototype.getSortValue = function(result) {
   var columns = this.getColumns()
   var sortCol = _.find(columns, function(c) {
     return c.title === sortBy
-  })
+  }) || sortBy
   return getValue(sortCol, result.value)
 }
 
@@ -157,11 +150,13 @@ function parseSetKey (setKey) {
 
 function getValue (col, row) {
   if (col == null) return null
-  var val
-  if (typeof col.value === 'string') {
-    val = row[col.value]
+
+  if (typeof col === 'string') {
+    var val = row[col]
+  } else if (typeof col.value === 'string') {
+    var val = row[col.value]
   } else {
-    val = col.value(row)
+    var val = col.value(row)
   }
   return val
 }
