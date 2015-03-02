@@ -18,13 +18,16 @@ DataFrame.prototype.calculate = function(opts) {
   this.sortDir = opts.sortDir
 
   var results = this.getResults()
-  return results
+  var resultRows = this.parseResults(results)
+
+  return resultRows
 }
 
 DataFrame.prototype.getResults = function() {
   var self = this
 
   var columns = this.getColumns()
+
   var activeDimensions = this.activeDimensions
   var reduce = this.reduce
 
@@ -38,21 +41,16 @@ DataFrame.prototype.getResults = function() {
     setKeys.forEach(function(setKey, iLevel) {
       if (!curLevel[setKey]) {
         curLevel[setKey] = {value: {}, subDimensions: {}, key: setKey}
-
-        self.calculations.forEach(function(calc) {
-          curLevel[setKey].value[calc.title] = 0
-        })
       }
 
       var result = curLevel[setKey].value
 
       if (!self.cache[setKey]) {
         setKeyCache[setKey] = result
-
+        _.extend(result, reduce(row, result))
 
         var dimensionVals = parseSetKey(setKey)
         _.extend(result, dimensionVals)
-        _.extend(result, reduce(row, result))
       } else {
         curLevel = curLevel[setKey].subDimensions
       }
@@ -67,6 +65,30 @@ DataFrame.prototype.getResults = function() {
 
   return results
 
+}
+
+DataFrame.prototype.parseResults = function(results, level) {
+  self = this
+  var level = level || 0
+  var rows = []
+
+  var sorted = _.sortBy(results, this.getSortValue.bind(this))
+  if (this.sortDir === 'desc') sorted.reverse()
+
+  _.each(sorted, function(dimension) {
+    var total = dimension.value
+    total._level = level
+    rows.push(total)
+
+    if (Object.keys(dimension.subDimensions).length) {
+      var subLevel = level + 1
+      var subRows = self.parseResults(dimension.subDimensions, subLevel)
+
+      subRows.forEach(function(subRow) {rows.push(subRow)})
+    }
+  })
+
+  return rows
 }
 
 DataFrame.prototype.getColumns = function() {
@@ -111,6 +133,15 @@ DataFrame.prototype.findDimension = function (title) {
   return _.find(this.dimensions, function(d) {
     return d.title === title
   })
+}
+
+DataFrame.prototype.getSortValue = function(result) {
+  var sortBy = this.sortBy
+  var columns = this.getColumns()
+  var sortCol = _.find(columns, function(c) {
+    return c.title === sortBy
+  })
+  return getValue(sortCol, result.value)
 }
 
 function parseSetKey (setKey) {
