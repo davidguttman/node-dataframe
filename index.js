@@ -77,6 +77,7 @@ DataFrame.prototype.parseResults = function(results, level) {
   _.each(sorted, function(dimension) {
     var total = dimension.value
     total._level = level
+    total._key = dimension.key
     rows.push(total)
 
     if (Object.keys(dimension.subDimensions).length) {
