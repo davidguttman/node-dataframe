@@ -153,6 +153,8 @@ function getValue (col, row) {
 
   if (typeof col === 'string') {
     var val = row[col]
+  } else if (typeof col === 'function') {
+    var val = col(row)
   } else if (typeof col.value === 'string') {
     var val = row[col.value]
   } else {
