@@ -51,7 +51,7 @@ DataFrame.prototype.getResults = function() {
         var dimensionVals = parseSetKey(setKey)
         _.extend(result, dimensionVals)
       } else {
-        curLevel = curLevel[setKey].subDimensions
+        curLevel[setKey].value = self.cache[setKey]
       }
 
       curLevel = curLevel[setKey].subDimensions
