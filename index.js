@@ -49,8 +49,9 @@ DataFrame.prototype.getResults = function() {
 
       var result = curLevel[setKey].value
 
-      if (!self.cache[setKey]) {
-        setKeyCache[setKey] = result
+      if (filter || !self.cache[setKey]) {
+        if (!filter) setKeyCache[setKey] = result
+
         _.extend(result, reduce(row, result))
 
         var dimensionVals = parseSetKey(setKey)
