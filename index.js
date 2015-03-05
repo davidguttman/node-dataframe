@@ -15,6 +15,7 @@ DataFrame.prototype.calculate = function(opts) {
   this.activeDimensions = opts.dimensions
   this.sortBy = opts.sortBy
   this.sortDir = opts.sortDir
+  this.filter = opts.filter
 
   var results = this.getResults()
   var resultRows = this.parseResults(results)
@@ -28,6 +29,7 @@ DataFrame.prototype.getResults = function() {
   var columns = this.getColumns()
 
   var activeDimensions = this.activeDimensions
+  var filter = this.filter
   var reduce = this.reduce
 
   var results = {}
@@ -35,6 +37,9 @@ DataFrame.prototype.getResults = function() {
 
   this.rows.forEach(function(row) {
     var setKeys = self.createSetKeys(activeDimensions, row)
+    var dVals = parseSetKey(setKeys[setKeys.length-1])
+    if (filter && !filter(dVals)) return
+
     var curLevel = results
 
     setKeys.forEach(function(setKey, iLevel) {

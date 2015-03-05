@@ -50,3 +50,55 @@ tape('Basic Usage', function(t) {
 
   t.end()
 })
+
+tape('Filter', function(t) {
+  var dimensions = [
+    {value: 'firstName', title: 'First Name'},
+    {value: 'lastName', title: 'Last Name'}
+  ]
+
+  var reduce = function(row, memo) {
+    memo.count = (memo.count || 0) + 1
+    return memo
+  }
+
+  var df = DataFrame({
+    rows: data,
+    dimensions: dimensions,
+    reduce: reduce
+  })
+
+  var results = df.calculate({
+    dimensions: ['Last Name', 'First Name'],
+    filter: function(row) {
+      return row['First Name'] === 'Maximilian'
+    }
+  })
+
+  t.equal(results.length, 4, 'should have 3 result rows')
+
+  results.forEach(function(result) {
+    if (result._level !== 1) return
+    t.equal(result['First Name'], 'Maximilian', 'should match name')
+  })
+
+  // var first = results[0]
+  // t.equal(first._level, 0, 'should have level')
+  // t.equal(first['Transaction Type'], 'invoice', 'should have transaction type')
+  // t.equal(first.count, 3, 'should have count of 3')
+  // t.notOk(first['First Name'], 'should not have First Name')
+
+  // var second = results[1]
+  // var third = results[2]
+
+  // t.ok(second['First Name'], 'should have first name')
+  // t.equal(third._level, 1, 'should have level')
+
+  // t.equal(first.count, (second.count + third.count), 'counts should add up')
+  // t.equal(first.amountTotal, (second.amountTotal + third.amountTotal), 'amountTotals should add up')
+
+  t.end()
+})
+
+
+

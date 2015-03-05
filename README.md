@@ -37,7 +37,11 @@ var df = DataFrame({
 var results = df.calculate({
   dimensions: ['First Name', 'Last Name'],
   sortBy: 'amountTotal',
-  sortDir: 'desc'
+  sortDir: 'desc',
+  // optionally filter results based on dimension values
+  filter: function(dimensions) {
+    return dimensions['First Name'] === 'Maximilian'
+  }
 })
 
 console.log('results', results)
