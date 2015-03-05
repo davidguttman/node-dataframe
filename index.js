@@ -13,6 +13,7 @@ function DataFrame (opts) {
 
 DataFrame.prototype.calculate = function(opts) {
   this.activeDimensions = opts.dimensions
+  if (this.activeDimensions.length < 1) this.activeDimensions = ['']
   this.sortBy = opts.sortBy
   this.sortDir = opts.sortDir
   this.filter = opts.filter
