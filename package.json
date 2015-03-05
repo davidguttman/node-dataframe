@@ -1,6 +1,6 @@
 {
   "name": "dataframe",
-  "version": "1.2.1",
+  "version": "1.2.2",
   "description": "Explore data by grouping and reducing.",
   "main": "index.js",
   "directories": {
