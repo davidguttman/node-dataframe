@@ -142,7 +142,11 @@ DataFrame.prototype.getSortValue = function(result) {
   var sortCol = _.find(columns, function(c) {
     return c.title === sortBy
   }) || sortBy
-  return getValue(sortCol, result.value)
+
+  var val = getValue(sortCol, result.value)
+  if (typeof val === 'undefined') return result.key
+
+  return val
 }
 
 function parseSetKey (setKey) {
