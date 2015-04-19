@@ -1,0 +1,19 @@
+{
+  "name": "dataframe",
+  "version": "1.2.3",
+  "description": "Explore data by grouping and reducing.",
+  "main": "./index.js",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/davidguttman/node-dataframe"
+  },
+  "ignore": [
+    "examples",
+    "test"
+  ],
+  "homepage": "https://github.com/davidguttman/node-dataframe",
+  "authors": [
+    "David Guttman"
+  ],
+  "license": "MIT"
+}
