@@ -17,6 +17,7 @@ DataFrame.prototype.calculate = function(opts) {
   this.sortBy = opts.sortBy
   this.sortDir = opts.sortDir
   this.filter = opts.filter
+  this.compact = opts.compact
 
   var results = this.getResults()
   var resultRows = this.parseResults(results)
@@ -74,7 +75,7 @@ DataFrame.prototype.getResults = function() {
 }
 
 DataFrame.prototype.parseResults = function(results, level) {
-  self = this
+  var self = this
   var level = level || 0
   var rows = []
 
@@ -85,12 +86,18 @@ DataFrame.prototype.parseResults = function(results, level) {
     var total = dimension.value
     total._level = level
     total._key = dimension.key
-    rows.push(total)
 
-    if (Object.keys(dimension.subDimensions).length) {
-      var subLevel = level + 1
+    var numSubDimensions = Object.keys(dimension.subDimensions).length;
+
+    if(self.compact && (numSubDimensions == 1)) {
+      // don't push the row
+    } else {
+      rows.push(total)
+    }
+
+    if (numSubDimensions) {
+      var subLevel = (self.compact && numSubDimensions == 1) ? level : level + 1;
       var subRows = self.parseResults(dimension.subDimensions, subLevel)
-
       subRows.forEach(function(subRow) {rows.push(subRow)})
     }
   })
