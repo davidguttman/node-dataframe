@@ -1,4 +1,9 @@
-var _ = require('lodash')
+var _ = {
+  extend: require('lodash/extend'),
+  each: require('lodash/each'),
+  sortBy: require('lodash/sortBy'),
+  find: require('lodash/find')
+}
 
 module.exports = function(opts) {return new DataFrame(opts)}
 
