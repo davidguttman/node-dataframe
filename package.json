@@ -1,6 +1,6 @@
 {
   "name": "dataframe",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "description": "Explore data by grouping and reducing.",
   "main": "index.js",
   "directories": {
@@ -11,14 +11,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/davidguttman/node-dataframe.git"
+    "url": "https://github.com/joetennant/node-dataframe.git"
   },
-  "author": "David Guttman <david@guttman.io> (http://davidguttman.com/)",
+  "author": "David Guttman <david@guttman.io> (http://davidguttman.com/), Joe Tennant",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/davidguttman/node-dataframe/issues"
+    "url": "https://github.com/joetennant/node-dataframe/issues"
   },
-  "homepage": "https://github.com/davidguttman/node-dataframe",
+  "homepage": "https://github.com/joetennant/node-dataframe",
   "dependencies": {
     "lodash": ">=4.1.0"
   },
