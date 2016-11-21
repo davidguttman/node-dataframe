@@ -158,7 +158,14 @@ DataFrame.prototype.getSortValue = function(result) {
   var val = getValue(sortCol, result.value)
   if (typeof val === 'undefined') return result.key
 
-  return val
+  if (!isNaN(parseFloat(val) && isFinite(val))){
+    return +val
+  } else if (typeof(val) === 'string') {
+    return val.toLowerCase()
+  } else {
+    return val
+  }
+
 }
 
 function parseSetKey (setKey) {
@@ -167,6 +174,7 @@ function parseSetKey (setKey) {
   for (var i = 0; i < kvPairs.length; i += 2) {
     var dTitle = kvPairs[i]
     var dVal = kvPairs[i+1]
+
     if (dTitle) parsed[dTitle] = dVal
   }
   return parsed
