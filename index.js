@@ -158,7 +158,7 @@ DataFrame.prototype.getSortValue = function(result) {
   var val = getValue(sortCol, result.value)
   if (typeof val === 'undefined') return result.key
 
-  if (!isNaN(parseFloat(val) && isFinite(val))){
+  if (!isNaN(parseFloat(val)) && isFinite(val)){
     return +val
   } else if (typeof(val) === 'string') {
     return val.toLowerCase()
