@@ -2,7 +2,9 @@ var _ = {
   extend: require('lodash/extend'),
   each: require('lodash/each'),
   sortBy: require('lodash/sortBy'),
-  find: require('lodash/find')
+  find: require('lodash/find'),
+  isDate: require('lodash/isDate'),
+  mapValues: require('lodash/mapValues')
 }
 
 module.exports = function(opts) {return new DataFrame(opts)}
@@ -88,6 +90,10 @@ DataFrame.prototype.parseResults = function(results, level) {
   if (this.sortDir === 'desc') sorted.reverse()
 
   _.each(sorted, function(dimension) {
+    dimension.value= _.mapValues(dimension.value, function(o) {
+      return _.isDate(o) ? o.toDateString():o
+    })
+
     var total = dimension.value
     total._level = level
     total._key = dimension.key
@@ -137,7 +143,8 @@ DataFrame.prototype.createSetKey = function (dimensions, row) {
   var key = ''
   _.sortBy(dimensions).forEach(function(dTitle) {
     var dimension = self.findDimension(dTitle)
-    key += [dTitle, getValue(dimension, row)].join('\xff') + '\xff'
+    var value = _.isDate(getValue(dimension, row)) ? getValue(dimension, row)+'ts' : getValue(dimension, row)
+    key += [dTitle, value].join('\xff') + '\xff'
   })
   return key
 }
@@ -174,7 +181,9 @@ function parseSetKey (setKey) {
   for (var i = 0; i < kvPairs.length; i += 2) {
     var dTitle = kvPairs[i]
     var dVal = kvPairs[i+1]
-
+    if( dVal && dVal.substr(dVal.length - 2)==='ts' ) {
+      dVal = new Date(dVal.slice(0, -2))
+    }
     if (dTitle) parsed[dTitle] = dVal
   }
   return parsed
